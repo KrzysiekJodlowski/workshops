@@ -3,7 +3,7 @@
 
 === Czym są właściwości?
 
-Każdy projekt tworzony przy pomocy narzędzia Maven ma jakieś właściwości np. nazwę, grupę, wersje bibliotek itd. Przykładowo wersję projektu (`project.version`) określamy jako `1.0`. Co musimy zrobić, gdy potrzebujemy odnieść się do tej wartości w innym miejscu lub nawet innym pliku _pom.xml_? Gdy przepisujemy wszystko ręcznie jaką mamy gwarancję, że nie zapomnieliśmy o żadnym jej wystąpieniu? Z pomocą przychodzą właściwości (_properties_). Do właściwości odnosimy się używając notacji `${właściwość}.
+Każdy projekt tworzony przy pomocy narzędzia Maven ma jakieś właściwości np. nazwę, grupę, wersje bibliotek itd. Przykładowo wersję projektu (`project.version`) określamy jako `1.0`. Co musimy zrobić, gdy potrzebujemy odnieść się do tej wartości w innym miejscu lub nawet innym pliku _pom.xml_? Gdy przepisujemy wszystko ręcznie jaką mamy gwarancję, że nie zapomnieliśmy o żadnym jej wystąpieniu? Z pomocą przychodzą właściwości (_properties_). Do właściwości odnosimy się używając notacji `${właściwość}`.
 
 ====
 
