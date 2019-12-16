@@ -1,0 +1,147 @@
+== Git checkout - skakanie po gałęziach i nie tylko
+---
+
+=== Jak działa polecenie https://git-scm.com/docs/git-checkout[_git checkout_]?
+
+Aktualizuje pliki w drzewie roboczym, aby pasowały do wersji z indeksu lub określonego drzewa. Jeśli nie podano ścieżek, git checkout zaktualizuje również HEAD, aby ustawić określoną gałąź jako bieżącą gałąź. Zobaczmy jak to działa - wykonuj polecenia i obserwuj co się dzieje. Staraj się je wykonywać samodzielnie, w razie problemów poniżej zadań znajdziesz "ściągę". 
+
+---
+
+====
+
+*_Przygotuj repozytorium_*
+
+Stwórz katalog i zainicjuj w nim repozytorium. Następnie stwórz w nim plik z jakąkolwiek zawartością i sprawdź jak wygląda teraz _status_. Na końcu dodaj plik do _indeksu_. 
+
+====
+
+----
+mkdir git_checkout_workshop && cd git_checkout_workshop 
+git init 
+echo a > a 
+cat a 
+git status 
+git add . 
+----
+  
+====
+
+*_Odrzucanie zmian lokalnych_*
+
+Dodaj kolejną linijkę tekstu do utworzonego pliku. Sprawdź jak wygląda teraz _status_. Wpisz komendę `git checkout -- <nazwapliku>` (podwójna pauza). Zobacz _status_ i zawartość pliku. Co się stało? 
+
+====
+
+----
+echo bc >> a 
+cat a 
+git status 
+git checkout -- a 
+cat a 
+git status 
+----
+  
+====
+
+*_Cofanie zmian w pliku do stanu z konkretnej migawki (zarówno do indeksu jak i katalogu roboczego)_*  
+
+Dodaj zmodyfikowany plik do _indeksu_. Stwórz migawkę. Dodaj kolejną linię do pliku i ponownie dodaj zmianę do _indeksu_ oraz stwórz kolejną migawkę. Popatrz też na historię zmian. Wpisz komendę `git checkout <hash pierwszej migawki> -- <nazwapliku>` (podwójna pauza). Sprawdź zawartość pliku, _status_ i historię zmian. Co się zmieniło?
+
+====
+
+----
+git add . 
+git commit -m "Dodano plik a" 
+echo bc >> a 
+git add . 
+git commit -m "Zmodyfikowano plik a" 
+cat a 
+git log 
+git checkout <hash pierwszej migawki> -- a 
+cat a 
+git log 
+git status 
+----
+  
+====
+
+*_Tryb interaktywny polecenia checkout_*
+
+Nadpisz zawartość naszego pliku. Możesz sprawdzić jaki jest obecny _status_ (możesz stwierdzić, że nadużywamy tego polecenia, ale warto wyrobić w sobie nawyk jego wywpływania). Wpisz polecenie `git checkout -p`. Przeczytaj komunikat i zapoznaj się z możliwymi opcjami (wybierz opcję `?`). Następnie wybierz opcję `y` i zobacz, co się zmieniło sprawdzając _status_.
+
+==== 
+
+----
+echo def > a 
+git status 
+git checkout -p 
+? (zobacz jakie opcje są dostępne) 
+y 
+git status 
+----
+  
+====
+
+*_Zmiana gałęzi_*
+
+Sprawdź na jakiej jesteś gałęzi. Stwórz nową gałąź o dowolnej nazwie i wykonaj polecenie `git checkout <nazwagałęzi>`. Ponownie sprawdź na jakiej jesteś gałęzi. Stwórz nowy plik, dodaj go do _indeksu_ i stwórz migawkę. Zobacz ile plików znajduje się obecnie w repozytorium. Przenieś się na gałąź główną wykonując polecenie `git checkout master` i ponownie sprawdź zawartość repozytorium. Jak to wytłumaczysz?
+
+==== 
+
+----
+git branch 
+git branch nowa 
+git branch 
+git checkout nowa 
+git branch 
+echo abc > b 
+git add . 
+git commit -m "Dodano plik b" 
+ls
+git checkout master 
+ls 
+----
+  
+====
+
+*_Utworzenie gałęzi i jednoczesna zmiana wskaźnika na nią_*
+
+Istnieje często wykorzystywany skrót, który umożliwia stworzenie nowej gałęzi z jednoczesnym przeniesieniem się na nią - służy do tego flaga `-b` polecenia checkout. Wywołaj polecenie `git checkout -b <nazwanowejgałęzi>`. Sprawdź, na jakiej gałęzi obecnie jesteś.
+
+====
+
+----
+git checkout -b nowa2 
+git branch 
+----
+  
+====
+
+*_Oderwana głowa_*
+
+Kiedy podczas wywoływania polecenia `checkout` ani nazwa pliku ani nazwa gałęzi z lokalnego repozytorium nie zostanie podana — zamiast tego podany zostanie tag, gałąź zdalnego repozytorium lub wskazanie na konkretną migawkę otrzymamy anonimową gałąź zwaną _"oderwaną głową"_ (_detached HEAD_). Powtórzmy polecenie z punktu _"Cofanie zmian w pliku.."_ ale tym razem bez podawania nazwy pliku. Przeczytaj komunikat. Sprawdź _status_ i historię zmian. Zwróć uwagę na położenie głowicy.
+
+====
+
+----
+git checkout <hashpierwszejmigawki> 
+git status 
+git log
+----
+
+---
+
+[NOTE]
+====
+Aby dowiedzić się więcej o poleceniu checkout zajrzyj do dokumentacji: `git help checkout`.
+====
+  
+[TIP]
+====
+Aby pomóc sobie zwizualizować jak to wszystko działa zajrzyj https://learngitbranching.js.org/[tutaj] (szczególnie rozdział _"Ramping up"_ część 1 i 4).
+====
+
+[TIP]
+====
+Ciekawostka – w fazie eksperymentalnej jest alternatywne polecenie https://git-scm.com/docs/git-switch[switch].
+====

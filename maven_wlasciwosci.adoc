@@ -1,0 +1,203 @@
+== Maven - właściwości - czyli jak ułatwić sobie pracę z _pom.xml_
+---
+
+=== Czym są właściwości?
+
+Każdy projekt tworzony przy pomocy narzędzia Maven ma jakieś właściwości np. nazwę, grupę, wersje bibliotek itd. Przykładowo wersję projektu (`project.version`) określamy jako `1.0`. Co musimy zrobić, gdy potrzebujemy odnieść się do tej wartości w innym miejscu lub nawet innym pliku _pom.xml_? Gdy przepisujemy wszystko ręcznie jaką mamy gwarancję, że nie zapomnieliśmy o żadnym jej wystąpieniu? Z pomocą przychodzą właściwości (_properties_). Do właściwości odnosimy się używając notacji `${właściwość}.
+
+====
+
+*_Zadanie_*
+
+Otwórz plik _pom.xml_ dowolnego projektu i spróbuj znaleźć jakieś właściwości. Jest ich dużo czy mało? Jak sądzisz, czy to dobrze? Nie zamykaj pliku - przyda się w dalszej części warsztatów!
+
+====
+---
+=== Jakie właściwości mamy dostępne "od ręki"?
+
+Istnieją pewne domyślne właściwości dostępne w każdym projekcie Maven:
+
+- `project.*` - możesz użyć tego przedrostka aby odwoływać się do wartości zawartych w pliku _pom.xml_ (<<project>>).
+
+- `settings.*` - użyj do odwoływania się do wartości lokalnych ustawień Mavena (<<settings>>).
+
+- `env.*` - służy do odniesienia się do zmiennych środowiskowych, takich jak `PATH` czy `M2_HOME` (<<environment>>).
+
+- `Java System Properties` - każdą właściwość, którą można uzyskać wywołując metodę _System.getProperty()_ również można użyć jako właściwość (<<system>>).
+
+Oprócz domyślnych właściwości wymienionych powyżej każdy użytkownik może zdefiniować zestaw _własnych właściwości_ (<<user>>). Więcej informacji na temat każdego rodzaju właściwości znajdziesz poniżej.
+
+====
+
+*_Zadanie_*
+
+Spójrz jeszcze raz na otwarty plik _pom.xml_ - jeśli są w nim użyte właściwości, czy potrafisz określić jakiego są rodzaju? (jeśli w otwartym pliku nie ma użytych właściwości otwórz https://gist.githubusercontent.com/LIttleAncientForestKami/c9b185c123fc97f6022861f645766aa5/raw/45db276f570fcca357fbcf36b6209517c69c6427/pom.xml[przykładowy pom.xml]).
+
+====
+---
+[[project]]
+==== Właściwości projektu
+
+Aby odwołać się do wartości zawartej w pliku _pom.xml_ użyj notacji `project.*`. Przykładowe odwołania do właściwości projektu to:
+
+- `project.groupId`, `projevt.version`
+
+W przypadku modułów współużytkujących tą samą grupę i wersję dobrym pomysłem jest użycie odwołania do właściwości dla obu:
+
+----
+<dependencies>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sibling-project</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+</dependencies>
+----
+
+- `project.artifactId`
+
+Artefakt jest często używany jako nazwa generowanego pakietu, aby to osiągnąć można użyć deklaracji:
+
+----
+<build>
+    <finalName>${project.artifactId}</finalName>
+</build>
+----
+
+- `project.name`, `project.description`
+
+Nazwa i opis projektu często pojawiają się w dokumentacji. Żeby ułatwić sobie pracę można odwoływać się bezpośrednio do tych właściwości.
+
+- `project.build.*`
+
+Aby odnosić się do katalogów wyjściowych projektu nie używamy do tego zapisu `target/classes`, tylko właściwości projektu, np. ( * można zastąpić ):
+
+`sourceDirectory`, `scriptSourceDirectory`, `testSourceDirectory`, `outputDirectory`, `testOutputDirectory`
+
+[NOTE]
+====
+Używając notacji `project.*` w rzeczywistości odwołujesz sie do metod klasy `org.apache.maven.model.Model`. Przykładowo używając `${project.version}` tak naprawdę wywołujesz metodę _getVersion()_ klasy Model.
+====
+
+Odniesienie do pełnej struktury pliku _pom.xml_ znajdziesz http://maven.apache.org/ref/3.6.3/maven-model/maven.html[tutaj]. Listę właściwości klasy Model znajdziesz http://maven.apache.org/ref/3.6.3/apidocs/index.html[tutaj].
+
+---
+[[settings]]
+==== Właściwości ustawień
+
+W pliku _pom.xml_ możesz również odnosić się do lokalnych ustawień (domyślna lokalizacja pliku z ustawieniami to `~/.m2/settings.xml`). Aby odwołać się do wartości lokalnych ustawień użyj notacji `settings.*`. Plik _settings.xml_ zawiera lokalną konfigurację, w tym lokalizację lokalnego repozytorium oraz wszelkie serwery, profile i kopie lustrzane skonfigurowane przez użytkownika. Odniesienie struktury pliku _settings.xml_ znajdziesz http://maven.apache.org/ref/3.6.3/maven-settings/settings.html[tutaj].
+
+
+---
+[[environment]]
+==== Właściwości środowiska
+
+Aby odwołać się do właściwości środowiska użyj notacji `env.*`. Przykładowe odwołania:
+
+- `env.PATH`
+
+Ścieżka zawiera listę katalogów używanych do lokalizowania wykonywalnych skryptów i programów.
+
+- `env.HOME`
+
+Ścieżka do katalogu domowego - dobre praktyki zamiast niej nakazują używania właściwości `${user.home}`.
+
+- `env.JAVA_HOME`
+
+Ścieżka do katalogu Jawy - dobre praktyki zamiast niej nakazują używania właściwości `${java.home}`.
+
+- `env.M2_HOME`
+
+Ścieżka do katalogu z Mavenem.
+
+[NOTE]
+====
+Używając odniesień do właściwości `user` czy `java` zamiast `env` otrzymujesz bardziej przenośną kompilację, zgodną z ideą _"Write-Once-Run-Anywhere"_ (WORA; _Napisz raz, uruchamiaj wszędzie_) platformy Java.
+====
+
+---
+[[system]]
+==== Właściwości systemowe Jawy
+
+Każdą właściwość, którą można uzyskać wywołując metodę _System.getProperty()_ również można użyć jako właściwość. Przykładowe dostępne właściwości:
+
+|===
+|*Właściwość* | *Opis*
+|java.version
+|Wersja środowiska wykonawczego
+|java.vendor
+|Dostawca JRE
+|java.home
+|Katalog z Jawą
+|java.vm.specification.version
+|Wersja JVM
+|java.vm.specification.vendor
+|Dostawca JVM
+|java.vm.specification.name
+|Nazwa JVM
+|java.vm.version
+|java.class.path
+|Ścieżka do klasy
+|os.name
+|Nazwa systemu operacyjnego
+|user.name
+|Nazwa użytkownika
+|===
+
+Więcej na temat systemowych właściwości znajdziesz https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html[tutaj].
+
+---
+====
+
+*_Zadanie_*
+
+Przyjrzyj się jeszcze raz otwartemu plikowi _pom.xml_. Jakich właściwości mógłbyś w nim użyć? Zamień kilka z nich i spróbuj skompilować projekt.
+
+====
+---
+[[user]]
+=== Właściwości zdefiniowane przez użytkownika
+
+Oprócz domyślnych właściwości jako użytkownik masz możliwość definiowania własnych, dowolnych właściwości. Można je zdefiniować w pliku _pom.xml_ lub w https://maven.apache.org/guides/introduction/introduction-to-profiles.html[profilu]. Do właściwości ustawionych w pliku _pom.xml_ lub w profilu można się odwoływać jak do każdej innej właściwości. Przykłady użycia:
+----
+<project>
+    ...
+    <properties>
+        <arbitrary.property.a>Jakiś tekst</arbitrary.property.a>
+        <hibernate.version>3.3.0</hibernate.version>
+    </properties>
+    ...
+    <dependencies>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+    </dependencies>
+    ...
+</project>
+----
+
+W powyższym przykładzie użytkownik stworzył węzeł `<properties>`, w którym zdefiniował dwie właściwości: `arbitrary.property.a` i `hibernate.version`. Następnie w deklaracji zależności odwołuje się on do wartości właściwości przez użycie zapisu `${hibernate.version}`.
+
+---
+====
+
+*_Zadanie_*
+
+Stwórz w swom pliku _pom.xml_ deklarację właściwości z kilkoma wartościami i użyj ich w innych miejscach pliku. Prawda, że tak jest łatwiej?
+
+====
+
+
+___
+
+_Źródła_:
+
+http://maven.apache.org
+
+https://books.sonatype.com/mvnref-book/reference/resource-filtering-sect-properties.html
+
+_Kurs Mavena_:
+
+http://yaqzi.pl/2016/12/kurs-mavena-cz-01-wstep/
