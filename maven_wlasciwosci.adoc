@@ -135,7 +135,6 @@ Każdą właściwość, którą można uzyskać wywołując metodę _System.getP
 |Dostawca JVM
 |java.vm.specification.name
 |Nazwa JVM
-|java.vm.version
 |java.class.path
 |Ścieżka do klasy
 |os.name
