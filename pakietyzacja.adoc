@@ -1,0 +1,66 @@
+== PAKIETYZACJA
+
+*Definicja*
+
+Pakiet to grupa pokrewnych typów zapewniająca ochronę dostępu i zarządzanie https://pl.wikipedia.org/wiki/Przestrze%C5%84_nazw[przestrzenią nazw]. Typy odnoszą się do klas, interfejsów, wyliczeń i adnotacji.
+
+Typy wchodzące w skład platformy Java należą do różnych pakietów, które łączą klasy według funkcji: podstawowe klasy znajdują się w _java.lang_, klasy do odczytu i zapisu (wejściowe i wyjściowe) znajdują się w _java.io_ i tak dalej.
+
+Pakiety tworzymy aby:
+
+- my inni programiści mogli łatwo ustalić, że typy są ze sobą powiązane
+- my i inni programiści wiedzieli, gdzie znaleźć typy, które mogą zapewniać określone funkcje
+- stworzyć nową przestrzeń nazw, gdzie nazwy jednych typów nie będą powodować konfliktów z nazwami innych typów w innych pakietach
+- wesprzeć *enkapsulację* zezwalając typom w pakiecie na nieograniczony dostęp do siebie, a jednocześnie ograniczając dostęp dla typów spoza pakietu
+
+
+=== Tworzenie pakietu
+
+Pierwsza linia każdego pliku _.java_ *powinna* zawierać informację o pakiecie, w jakim się znajduje. Pakiet definiujemy używając słowa kluczowego `package` z następującą po niej nazwą pakietu. Zwykle jedne pakiety zagnieżdżone są w innych, wtedy do podpakietu odnosimy się oddzielając jego nazwę od nazwy rodzica kropką. "Fizycznie" w pamęci pakiety są folderami zawierającymi pliki typów a ich hierarchiczna struktura odzwierciedla zapis struktury pakietów.
+
+Konwencja mówi, że nazwy pakietów powinny zaczynać się od małej litery. Zwyczajowo dla pakietów używa się odwróconej nazwy domeny internetowej, np `com.example.mypackage`, gdzie pakiet `mypackage` tworzony jest przez programistę z `example.com`. Pakiety języka Java znajdują się w głównym pakiecie `java` lub `javax`. Nazwy pakietów nie mogą zawierać większości znaków specjalnych, zaczynać się od cyfr czy zawierać w nazwie słowa kluczowego (dla oddzielenia słów w nazwie pakietu zaleca się używanie podkreślnika).
+
+Warto mieć na uwadze, że w pakiecie mogą znaleźć się nie tylko pliki z rozszerzeniem _.java_.
+
+=== Członkowie pakietu
+
+Typy znajdujące się w pakiecie są nazywani członkami pakietu. Chcąc odnieść się do publicznego członka z innego pakietu używamy:
+
+- bezpośrednio w kodzie w pełni kwalifikowanej nazwy, np. `com.example.mypackage.MyClass` (bez importowania) - można użyć, gdy bardzo rzadko odnosimy się do członka
+- importując członka używając w pełni kwalifikowanej nazwy (słowo kluczowe `import`, np. `import com.example.mypackage.MyClass`) - zaimportowany w ten sposób członek nie wymaga każdorazowego odnoszenia się do jego pakietu
+- importując pakiet członka (`import com.example.mypackage.*`) - gwiazdka odnosi się do wszystkich członków wskazanego pakietu
+
+Jeśli odnosimy się do więcej niż 1 członka o tej samej nazwie, za każdym razem musimy użyć w pełni kwalifikowaną nazwę dla każdego z nich. Aby zaimportować stałą używamy notacji `import static com.example.mypackage.StaticClass`.
+
+=== Jak używać pakietów
+
+Najczęściej stosowanym podziałem na pakiety jest podział http://www.javapractices.com/topic/TopicAction.do;jsessionid=0BF4844350780B6F55476E1137FF4893?Id=205[ze względu na funkcje]. Przykład: `util`, `board`, `ui`. Innym podejściem jest podzielenie pakietów pod kątem warstw programu, na przykład: `model`, `view`, `controller`, `dao`.
+
+Podczas dzielenia programu na pakiety trzeba również brać pod uwagę https://www.martinfowler.com/ieeeSoftware/coupling.pdf[powiązania pomiędzy poszczególnymi komponentami], czyli które komponenty się między sobą komunikują i jakiego rodzaju jet to komunikacja - jedno- czy dwustronna.
+
+Wprawdzie istnieją pakiety, w których wszystkie komponenty mogą być publiczne, pakietyzacja powinna wspierać *enkapsulację* udstępniając na zewnątrz tylko potrzebne klientom klasy i ich metody. Podobnie jak w klasie, gdy metody pomocnicze ukrywamy za modyfikatorem `private` podobnie klasy pomocnicze powinny być prywatne dla pakietu.
+
+====
+*Ćwiczenie* - odpowiedz na pytania
+
+- czym jest pakiet?
+- co nam daje pakietyzacja?
+- Jakie czynniki powinniśmy brać pod uwagę dzieląc nasz program na pakiety?
+====
+
+====
+*Ćwiczenie* - podstawy
+
+https://docs.oracle.com/javase/tutorial/java/package/QandE/packages-questions.html[Tworzenie i używanie pakietów]
+====
+
+====
+*Ćwiczenie* - ucz się na własnych błędach - otwórz ostatnio napisany przez Ciebie program
+
+- ile masz w nim własnych pakietów?
+- czy w swoich klasach używasz wszystkich rodzajów odniesień do innych pakietów?
+- zastanów się: czy Twoja pakietyzacja na pewno wspiera enkapsulację? Jak to możesz poprawić? Spróbuj!
+====
+
+
+Przygotowano w oparciu o https://docs.oracle.com/javase/tutorial/java/package/index.html[tutorial Oracle].
